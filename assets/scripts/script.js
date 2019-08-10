@@ -233,11 +233,12 @@ window.addEventListener('DOMContentLoaded', () => {
             this.transform = new Vector4(x, y, width, height);
         };
 
-        check = (f) => {
+        check = () => {
             if(mousex >= this.transform.x && mousex <= this.transform.x + this.transform.z && mousey >= this.transform.y && mousey <= this.transform.y + this.transform.w) {
-                console.log("test");
-                f();
+                return true;
             }
+
+            return false;
         }
     }
 
@@ -467,7 +468,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }, 41);
 
-    // Mouse
+    // Mouse move
     DOMcanvas.addEventListener("mousemove", (e) => {
         e = e || window.event;
 
@@ -479,8 +480,29 @@ window.addEventListener('DOMContentLoaded', () => {
         // Game specific
         DOMcanvas.style.cursor = "default";
 
-        GAME_interaction_controlVolume.check(() => {
+        // Control - volume
+        if(GAME_interaction_controlVolume.check()) {
             DOMcanvas.style.cursor = "pointer";
-        });
+
+            return;
+        }
+    });
+
+    // Mouse click
+    DOMcanvas.addEventListener("mousedown", (e) => {
+        e = e || window.event;
+
+        let box = DOMcanvas.getBoundingClientRect();
+        mousex = e.clientX - box.left;
+        mousey = e.clientY - box.top;
+
+        // Game specific
+        // Control - volume
+        if(GAME_interaction_controlVolume.check()) {
+            if(volume >= 3) volume = 0;
+            else volume++;
+
+            return;
+        }
     });
 });
