@@ -225,6 +225,22 @@ window.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Interactable
+    class Interactable {
+        transform = new Vector4();
+
+        constructor(x, y, width, height) {
+            this.transform = new Vector4(x, y, width, height);
+        };
+
+        check = (f) => {
+            if(mousex >= this.transform.x && mousex <= this.transform.x + this.transform.z && mousey >= this.transform.y && mousey <= this.transform.y + this.transform.w) {
+                console.log("test");
+                f();
+            }
+        }
+    }
+
     // Vector4 object
     function Vector4(x, y, z, w) {
         this.x = x;
@@ -260,6 +276,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // Volume
     let volume = 3;
 
+    // Mouse
+    let mousex = 0;
+    let mousey = 0;
 
     // Sprites
     let sprites = [];
@@ -367,8 +386,13 @@ window.addEventListener('DOMContentLoaded', () => {
     let mainText = new Text();
     mainText.loadText("FontStuck", "./assets/fonts/FontStuck.png");
 
+
     // Game specific
     let GAME_curFrame = 0;
+
+
+    // Interactables
+    let GAME_interaction_controlVolume = new Interactable(2, 3, 23, 22);
 
 
     // Main loop
@@ -442,4 +466,21 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
     }, 41);
+
+    // Mouse
+    DOMcanvas.addEventListener("mousemove", (e) => {
+        e = e || window.event;
+
+        let box = DOMcanvas.getBoundingClientRect();
+        mousex = e.clientX - box.left;
+        mousey = e.clientY - box.top;
+
+
+        // Game specific
+        DOMcanvas.style.cursor = "default";
+
+        GAME_interaction_controlVolume.check(() => {
+            DOMcanvas.style.cursor = "pointer";
+        });
+    });
 });
