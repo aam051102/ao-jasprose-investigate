@@ -18,6 +18,13 @@ window.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Set volume
+    function updateVolume() {
+        for(let i = 0; i < audio.length; i++) {
+            audio[i].volume = (volume != 0) ? 0.33 * volume : 0;
+        }
+    }
+
     // Sprite loading function
     let loadSprite = (path) => {
         sprites[currentSprite] = new Image();
@@ -393,6 +400,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
     // Interactables
+    let GAME_interaction_screen = new Interactable(0, 0, 650, 450);
     let GAME_interaction_controlVolume = new Interactable(2, 3, 23, 22);
 
 
@@ -502,7 +510,22 @@ window.addEventListener('DOMContentLoaded', () => {
             if(volume >= 3) volume = 0;
             else volume++;
 
+            if(!audio[0].paused) {
+                updateVolume();
+            }
+
             return;
+        }
+
+        // Screen
+        if(GAME_curFrame == 0) {
+            if(GAME_interaction_screen.check()) {
+                GAME_curFrame += 1;
+                audio[0].play();
+                updateVolume();
+
+                return;
+            }
         }
     });
 });
