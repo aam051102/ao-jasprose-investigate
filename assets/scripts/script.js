@@ -386,7 +386,7 @@ window.addEventListener('DOMContentLoaded', () => {
         "./assets/images/animations/Easteregg/Easteregg_19.png", "./assets/images/animations/Easteregg/Easteregg_20.png",
         "./assets/images/animations/Easteregg/Easteregg_21.png", "./assets/images/animations/Easteregg/Easteregg_22.png"
     ], [
-        20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20
+        20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20
     ]);
     gifEasteregg.setTransform(216, 128, -1, -1);
 
@@ -401,7 +401,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ], [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     ]);
-    gifErisolpriteHero.setTransform(521, 131, -1, -1);
+    gifErisolpriteHero.setTransform(521, 131, 442.96, 674.61);
 
     // Jasprosesprite Back
     let gifJasprosespriteBack = new AnimatedGif([
@@ -579,7 +579,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     else if(GAME_erisolspriteHeroPosX == 371) { GAME_erisolspriteHeroPosX = 347; GAME_erisolspriteHeroPosY = 20; }
                     else if(GAME_erisolspriteHeroPosX == 347) { GAME_erisolspriteHeroPosX = 336; GAME_erisolspriteHeroPosY = 12; gifErisolpriteHero.start(); }
 
-                    gifErisolpriteHero.setTransform(GAME_erisolspriteHeroPosX, GAME_erisolspriteHeroPosY, -1, -1);
+                    gifErisolpriteHero.setTransform(GAME_erisolspriteHeroPosX, GAME_erisolspriteHeroPosY, 442.96, 674.61);
                 }
 
                 // Fuck buttons
