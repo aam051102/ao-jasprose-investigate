@@ -51,6 +51,27 @@ window.addEventListener('DOMContentLoaded', () => {
         allFontsLoaded = false;
         loadedFonts = [];
 
+        // Get text width
+        getTextWidth = (text, font, size) => {
+            let width = 0;
+            let fontShortcut = this.fonts.get(font);
+
+            for(let i = 0; i < text.length; i++) {
+                // Line breaks
+                 if(text[i] == " ") {
+                    width += fontShortcut.spaceWidth * size;
+
+                    continue;
+                }
+
+                width += (fontShortcut.sprites.get(text[i]).z + fontShortcut.glyphSpacing) * size;
+            }
+
+
+
+            return width;
+        };
+
         // Text loading function
         loadText = (font, src) => {
             let thisFont = new TextFont(src);
@@ -121,9 +142,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 data[p + 2] = colour.b; // Blue
             }
 
-
             // Place on buffer
-            ctxBuffer.putImageData(spriteData, 0, 0);
+            ctxSprite.putImageData(spriteData, 0, 0);
+
+            ctxBuffer.drawImage(DOMcanvasSprite, 0, 0);
         };
     }
 
@@ -221,18 +243,10 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = "#000000";
 	ctx.font = "bold 13px Courier New";
     ctx.textAlign = "center";
-    
-    ctx.webkitImageSmoothingEnabled = false;
-	ctx.msImageSmoothingEnabled = false;
-    ctx.imageSmoothingEnabled = false;
 
     // Buffer canvas
     let DOMcanvasBuffer = document.querySelector("#bufferCanvas");
     let ctxBuffer = DOMcanvasBuffer.getContext("2d");
-
-    ctxBuffer.webkitImageSmoothingEnabled = false;
-	ctxBuffer.msImageSmoothingEnabled = false;
-    ctxBuffer.imageSmoothingEnabled = false;
 
     // Sprite canvas
     let DOMcanvasSprite = document.querySelector("#spriteCanvas");
@@ -242,12 +256,24 @@ window.addEventListener('DOMContentLoaded', () => {
 	ctxSprite.msImageSmoothingEnabled = false;
     ctxSprite.imageSmoothingEnabled = false;
 
+
+    // Volume
+    let volume = 3;
+
+
     // Sprites
     let sprites = [];
 	let loadedSprites = [];
     let allSpritesLoaded = false;
     let currentSprite = 0;
 
+    // Volume control
+    loadSprite("./assets/images/controls/Volume_01.png");
+    loadSprite("./assets/images/controls/Volume_02.png");
+    loadSprite("./assets/images/controls/Volume_03.png");
+    loadSprite("./assets/images/controls/Volume_04.png");
+
+    // Other
     loadSprite("./assets/images/BG1.png");
     loadSprite("./assets/images/BG2.png");
     loadSprite("./assets/images/Arrow.png");
@@ -337,11 +363,9 @@ window.addEventListener('DOMContentLoaded', () => {
         0, 0
     ]);
 
-
     // Fonts
     let mainText = new Text();
     mainText.loadText("FontStuck", "./assets/fonts/FontStuck.png");
-
 
     // Game specific
     let GAME_curFrame = 0;
@@ -353,12 +377,20 @@ window.addEventListener('DOMContentLoaded', () => {
             // Reset canvas
             ctxBuffer.clearRect(0, 0, 650, 450);
             
+
             if(GAME_curFrame === 0) {
                 gifPreloader.update();
+
+                // "Click to start." text
+                mainText.drawText("Click to start.", 325 - (mainText.getTextWidth("Click to start.", "FontStuck", 1) / 2), 400, "FontStuck", hexToRgb("#000000"), 1);
             } else if(GAME_curFrame === 1) {
-                ctxBuffer.drawImage(sprites[0], 0, 0);
+                ctxBuffer.drawImage(sprites[4], 0, 0);
             }
             
+
+            // Controls
+            ctxBuffer.drawImage(sprites[volume], 3, 2, 22.95, 21.65); // Volume
+
             
             // Update main canvas with buffer
             ctx.putImageData(ctxBuffer.getImageData(0, 0, DOMcanvasBuffer.width, DOMcanvasBuffer.height), 0, 0);
@@ -407,13 +439,6 @@ window.addEventListener('DOMContentLoaded', () => {
                     mainText.allFontsLoaded = false;
                     break;
                 }
-            }
-
-
-            
-            // Play background music if everything is loaded
-            if(allSpritesLoaded && allGifsLoaded && mainText.allFontsLoaded && allAudioLoaded) {
-                audio[0].play();
             }
         }
     }, 41);
