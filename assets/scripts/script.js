@@ -353,6 +353,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let currentAudio = 0;
 
     loadAudio("./assets/audio/Elevatorstuck_Meows.mp3");
+    audio[0].loop = true;
 
 
     // Gifs
@@ -421,7 +422,10 @@ window.addEventListener('DOMContentLoaded', () => {
     let GAME_curFrame = 0;
     let GAME_fade = 0;
     let GAME_fadeOut = false;
+
+    let GAME_messageFrame = 0;
     let GAME_fuckMessage = false;
+    let GAME_jasproseMessage = 0;
 
 
     
@@ -433,13 +437,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
     let GAME_fuckButtonsPos = -165;
 
-    let GAME_fuckMessageFrame = 0;
     
 
     // Interactables
     let GAME_interaction_screen = new Interactable(0, 0, 650, 450);
     let GAME_interaction_controlVolume = new Interactable(2, 3, 23, 22);
-    let GAME_interaction_easteregg = new Interactable(216, 128, 102, 138);
+    let GAME_interaction_easteregg = new Interactable(225, 199, 55, 60);
     let GAME_interaction_erisolsprite = new Interactable(442, 135, 44.775, 70.2);
     let GAME_interaction_fuckButtons = new Interactable(33, 10, 164, 426);
 
@@ -500,6 +503,41 @@ window.addEventListener('DOMContentLoaded', () => {
                     gifEasteregg.stop();
                 }
 
+                // Jasprose message
+                if(GAME_jasproseMessage == 1) {
+                    if(GAME_messageFrame == 2) {
+                        ctxBuffer.drawImage(sprites[7], 56.5, 25, 537, 50);
+                    } else if(GAME_messageFrame == 1) {
+                        ctxBuffer.drawImage(sprites[7], 49.5, 24.5, 551, 51);
+                    } else if(GAME_messageFrame == 0) {
+                        ctxBuffer.drawImage(sprites[7], 191, 37.5, 268, 25);
+                    }
+
+                    if(GAME_messageFrame > 0) {
+                        mainText.drawText("Who the fuck is this.", 80, 50 - 6, "FontStuck", hexToRgb("#000000"), 1);
+                    }
+
+                    if(GAME_messageFrame < 2) {
+                        GAME_messageFrame++;
+                    }
+                } else if(GAME_jasproseMessage == 2) {
+                    if(GAME_messageFrame == 2) {
+                        ctxBuffer.drawImage(sprites[7], 56.5, 25, 537, 50);
+                    } else if(GAME_messageFrame == 1) {
+                        ctxBuffer.drawImage(sprites[7], 49.5, 24.5, 551, 51);
+                    } else if(GAME_messageFrame == 0) {
+                        ctxBuffer.drawImage(sprites[7], 191, 37.5, 268, 25);
+                    }
+
+                    if(GAME_messageFrame > 0) {
+                        mainText.drawText("You interrogate the ghastly green sprite for answers.", 80, 50 - 6, "FontStuck", hexToRgb("#000000"), 1);
+                    }
+
+                    if(GAME_messageFrame < 2) {
+                        GAME_messageFrame++;
+                    }
+                }
+
                 // Fade out
                 if(GAME_fadeOut) {
                     ctxBuffer.globalAlpha = GAME_fade;
@@ -557,20 +595,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 // Fuck buttons
                 if(GAME_fuckMessage) {
-                    if(GAME_fuckMessageFrame == 2) {
+                    if(GAME_messageFrame == 2) {
                         ctxBuffer.drawImage(sprites[8], 56.5, 225, 537, 177);
-                    } else if(GAME_fuckMessageFrame == 1) {
+                    } else if(GAME_messageFrame == 1) {
                         ctxBuffer.drawImage(sprites[8], 46.5, 221.5, 557, 184);
-                    } else if(GAME_fuckMessageFrame == 0) {
+                    } else if(GAME_messageFrame == 0) {
                         ctxBuffer.drawImage(sprites[8], 156.5, 258, 338, 111);
                     }
 
-                    if(GAME_fuckMessageFrame > 0) {
+                    if(GAME_messageFrame > 0) {
                         mainText.drawText("fuck", 325 - mainText.getTextWidth("fuck", "FontStuck", 1) / 2, 225 + (177 / 2) - 4, "FontStuck", hexToRgb("#4ac925"), 1);
                     }
 
-                    if(GAME_fuckMessageFrame < 2) {
-                        GAME_fuckMessageFrame++;
+                    if(GAME_messageFrame < 2) {
+                        GAME_messageFrame++;
                     }
                 }
 
@@ -678,8 +716,8 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         // Erisolsprite
-        if(GAME_curFrame == 2) {
-            if(GAME_interaction_erisolsprite.check() && GAME_fade == 0) {
+        if(GAME_curFrame == 2 && GAME_fade == 0 && GAME_jasproseMessage == 0) {
+            if(GAME_interaction_erisolsprite.check()) {
                 DOMcanvas.style.cursor = "pointer";
 
                 return;
@@ -729,7 +767,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         // Easteregg
-        if(GAME_curFrame == 2 && GAME_fade == 0) {
+        if(GAME_curFrame == 2 && GAME_fade == 0 && GAME_jasproseMessage == 0) {
             if(GAME_interaction_easteregg.check()) {
                 gifEasteregg.reset();
                 gifEasteregg.start();
@@ -739,9 +777,24 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         // Erisolsprite
-        if(GAME_curFrame == 2 && GAME_fade == 0) {
+        if(GAME_curFrame == 2 && GAME_fade == 0 && GAME_jasproseMessage == 0) {
             if(GAME_interaction_erisolsprite.check()) {
-                GAME_fadeOut = true;
+                GAME_messageFrame = 0;
+                GAME_jasproseMessage = 1;
+
+                return;
+            }
+        }
+
+        // Continue jasprose message
+        if(GAME_curFrame == 2 && GAME_jasproseMessage) {
+            if(GAME_interaction_screen.check()) {
+                GAME_messageFrame = 0;
+                GAME_jasproseMessage++;
+
+                if(GAME_jasproseMessage > 2) {
+                    GAME_fadeOut = true;
+                }
 
                 return;
             }
@@ -750,7 +803,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // Fuck buttons
         if(GAME_curFrame == 3 && !GAME_fuckMessage && GAME_fade == 0) {
             if(GAME_interaction_fuckButtons.check()) {
-                GAME_fuckMessageFrame = 0;
+                GAME_messageFrame = 0;
                 GAME_fuckMessage = true;
 
                 return;
