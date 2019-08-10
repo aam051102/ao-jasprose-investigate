@@ -153,6 +153,9 @@ window.addEventListener('DOMContentLoaded', () => {
             ctxSprite.putImageData(spriteData, 0, 0);
 
             ctxBuffer.drawImage(DOMcanvasSprite, 0, 0);
+
+
+            ctxSprite.clearRect(0, 0, DOMcanvasSprite.width, DOMcanvasSprite.height);
         };
     }
 
@@ -179,24 +182,50 @@ window.addEventListener('DOMContentLoaded', () => {
     // Animated Gif object
     class AnimatedGif {
         frames = [];
+        loadedFrames = [];
         timing = [];
         curTiming = 0;
         curFrame = 0;
         isPlaying = false;
-        x = 0;
-        y = 0;
+        transform = new Vector4();
 
         constructor(frames, timing) {
+            gifs[currentGif] = this;
+            loadedGifs[currentGif] = false;
+
             for(let i = 0; i < frames.length; i++) {
                 this.frames[i] = new Image();
                 this.frames[i].src = frames[i];
 
-                this.frames.onload = () => {
-                    loadedGifs[currentGif] = true;
+                this.loadedFrames[i] = false;
+
+                this.frames[i].onload = (e) => {
+                    this.loadedFrames[this.frames.indexOf(e.path[0])] = true;
+
+                    if(frames.length == this.loadedFrames.length) {
+                        let hasFailed = false;
+                        
+                        for(let n = 0; n < this.loadedFrames.length; n++) {
+                            if(this.loadedFrames[n] == false) {
+                                hasFailed = true;
+                                break;
+                            }
+                        }
+
+                        if(!hasFailed) {
+                            loadedGifs[gifs.indexOf(this)] = true;
+                        }
+                    }
                 };
             }
 
             this.timing = timing;
+
+            currentGif++;
+        };
+
+        setTransform = (x, y, width, height) => {
+            this.transform = new Vector4(x, y, width, height);
         };
 
         start = () => {
@@ -209,22 +238,25 @@ window.addEventListener('DOMContentLoaded', () => {
 
         reset = () => {
             this.curFrame = 0;
-            this.curTiming = 0;
+            this.curTiming = this.timing[0];
         };
 
         update = () => {
-            ctxBuffer.drawImage(this.frames[this.curFrame], this.x, this.y);
+            if(this.transform.z !== -1 && this.transform.w !== -1) {
+                ctxBuffer.drawImage(this.frames[this.curFrame], this.transform.x, this.transform.y, this.transform.z, this.transform.w);
+            } else {
+                ctxBuffer.drawImage(this.frames[this.curFrame], this.transform.x, this.transform.y);
+            }
 
             if(this.isPlaying) {
                 if(this.curTiming <= 0) {
-                    this.curTiming = this.timing[this.curFrame];
-
-
                     if(this.curFrame < this.frames.length - 1) {
                         this.curFrame++;
                     } else {
                         this.curFrame = 0;
                     }
+
+                    this.curTiming = this.timing[this.curFrame];
                 } else {
                     this.curTiming--;
                 }
@@ -272,6 +304,10 @@ window.addEventListener('DOMContentLoaded', () => {
     let DOMcanvasBuffer = document.querySelector("#bufferCanvas");
     let ctxBuffer = DOMcanvasBuffer.getContext("2d");
 
+    ctxBuffer.fillStyle = "#000000";
+	ctxBuffer.font = "bold 13px Courier New";
+    ctxBuffer.textAlign = "center";
+
     // Sprite canvas
     let DOMcanvasSprite = document.querySelector("#spriteCanvas");
     let ctxSprite = DOMcanvasSprite.getContext("2d");
@@ -307,6 +343,7 @@ window.addEventListener('DOMContentLoaded', () => {
     loadSprite("./assets/images/TextBox1.png");
     loadSprite("./assets/images/TextBox2.png");
     loadSprite("./assets/images/FuckButtons.png");
+    loadSprite("./assets/images//Erisolsprite.png");
 
 
     // Audio
@@ -331,6 +368,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ], [
         0, 0
     ]);
+    gifPreloader.setTransform(0, 0, -1, -1);
     gifPreloader.start();
 
     // Easteregg
@@ -349,16 +387,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ], [
         20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20
     ]);
-
-    // Erisolsprite
-    let gifErisolprite = new AnimatedGif([
-        "./assets/images/animations/Erisolsprite/Erisolsprite_01.png",
-        "./assets/images/animations/Erisolsprite/Erisolsprite_02.png",
-        "./assets/images/animations/Erisolsprite/Erisolsprite_03.png",
-        "./assets/images/animations/Erisolsprite/Erisolsprite_04.png"
-    ], [
-        0, 0, 0, 0
-    ]);
+    gifEasteregg.setTransform(216, 128, -1, -1);
 
     // Erisolsprite Hero
     let gifErisolpriteHero = new AnimatedGif([
@@ -371,16 +400,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ], [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     ]);
-
-    // Jasprosesprite
-    let gifJasprosesprite = new AnimatedGif([
-        "./assets/images/animations/Jasprosesprite/Jasprosesprite_01.png",
-        "./assets/images/animations/Jasprosesprite/Jasprosesprite_02.png",
-        "./assets/images/animations/Jasprosesprite/Jasprosesprite_03.png",
-        "./assets/images/animations/Jasprosesprite/Jasprosesprite_04.png"
-    ], [
-        0, 0, 0, 0
-    ]);
+    gifErisolpriteHero.setTransform(521, 131, -1, -1);
 
     // Jasprosesprite Back
     let gifJasprosespriteBack = new AnimatedGif([
@@ -389,6 +409,8 @@ window.addEventListener('DOMContentLoaded', () => {
     ], [
         0, 0
     ]);
+    gifJasprosespriteBack.setTransform(0, 0, -1, -1);
+
 
     // Fonts
     let mainText = new Text();
@@ -397,11 +419,29 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Game specific
     let GAME_curFrame = 0;
+    let GAME_fade = 0;
+    let GAME_fadeOut = false;
+    let GAME_fuckMessage = false;
 
+
+    
+    let GAME_erisolspriteHeroPosX = 521;
+    let GAME_erisolspriteHeroPosY = 131;
+    
+    let GAME_erisolspriteArrowOffset = 0;
+    let GAME_erisolspriteArrowDirection = false;
+
+    let GAME_fuckButtonsPos = -165;
+
+    let GAME_fuckMessageFrame = 0;
+    
 
     // Interactables
     let GAME_interaction_screen = new Interactable(0, 0, 650, 450);
     let GAME_interaction_controlVolume = new Interactable(2, 3, 23, 22);
+    let GAME_interaction_easteregg = new Interactable(216, 128, 102, 138);
+    let GAME_interaction_erisolsprite = new Interactable(442, 135, 44.775, 70.2);
+    let GAME_interaction_fuckButtons = new Interactable(33, 10, 164, 426);
 
 
     // Main loop
@@ -417,7 +457,132 @@ window.addEventListener('DOMContentLoaded', () => {
                 // "Click to start." text
                 mainText.drawText("Click to start.", 325 - (mainText.getTextWidth("Click to start.", "FontStuck", 1) / 2), 400, "FontStuck", hexToRgb("#000000"), 1);
             } else if(GAME_curFrame === 1) {
+                gifPreloader.update();
+
+                // Fade out
+                ctxBuffer.globalAlpha = GAME_fade;
+                ctxBuffer.fillRect(0, 0, 650, 450);
+                ctxBuffer.globalAlpha = 1;
+                GAME_fade += .02;
+
+                if(GAME_fade >= 1) {
+                    GAME_curFrame += 1;
+
+                    gifJasprosespriteBack.start();
+                }
+            } else if(GAME_curFrame === 2) {
                 ctxBuffer.drawImage(sprites[4], 0, 0);
+
+                ctxBuffer.drawImage(sprites[10], 442, 135 - GAME_erisolspriteArrowOffset, 44.775, 70.2);
+                if(GAME_fade == 0) ctxBuffer.drawImage(sprites[6], 450, 113 + GAME_erisolspriteArrowOffset, 20.88, 12.96);
+
+                gifJasprosespriteBack.update();
+                gifEasteregg.update();
+
+
+                // Erisolsprite arrow
+                if(!GAME_erisolspriteArrowDirection) {
+                    GAME_erisolspriteArrowOffset++;
+
+                    if(GAME_erisolspriteArrowOffset >= 2) {
+                        GAME_erisolspriteArrowDirection = true;
+                    }
+                } else {
+                    GAME_erisolspriteArrowOffset--;
+
+                    if(GAME_erisolspriteArrowOffset <= 0) {
+                        GAME_erisolspriteArrowDirection = false;
+                    }
+                }
+
+                // Easteregg
+                if(gifEasteregg.curFrame == gifEasteregg.frames.length - 1) {
+                    gifEasteregg.stop();
+                }
+
+                // Fade out
+                if(GAME_fadeOut) {
+                    ctxBuffer.globalAlpha = GAME_fade;
+                    ctxBuffer.fillRect(0, 0, 650, 450);
+                    ctxBuffer.globalAlpha = 1;
+                    GAME_fade += .05;
+
+                    if(GAME_fade >= 1) {
+                        GAME_curFrame += 1;
+                        GAME_fadeOut = false;
+
+                        gifJasprosespriteBack.start();
+                    }
+                } else {
+                    // Fade in
+                    if(GAME_fade >= 0.02) {
+                        ctxBuffer.globalAlpha = GAME_fade;
+                        ctxBuffer.fillRect(0, 0, 650, 450);
+                        ctxBuffer.globalAlpha = 1;
+                        GAME_fade -= .02;
+                    } else if(GAME_fade < 0.02 && GAME_fade > 0) {
+                        GAME_fade = 0;
+                    }
+                }
+            } else if(GAME_curFrame === 3) {
+                ctxBuffer.drawImage(sprites[5], 0, 0)
+                ctxBuffer.drawImage(sprites[9], GAME_fuckButtonsPos, 10);
+
+                gifErisolpriteHero.update();
+
+
+                // ErisolspriteHero
+                if(GAME_erisolspriteHeroPosX != 336) {
+                    if(GAME_erisolspriteHeroPosX == 521) { GAME_erisolspriteHeroPosX = 487; GAME_erisolspriteHeroPosY = 109; }
+                    else if(GAME_erisolspriteHeroPosX == 487) { GAME_erisolspriteHeroPosX = 455; GAME_erisolspriteHeroPosY = 89; }
+                    else if(GAME_erisolspriteHeroPosX == 455) { GAME_erisolspriteHeroPosX = 422; GAME_erisolspriteHeroPosY = 70; }
+                    else if(GAME_erisolspriteHeroPosX == 422) { GAME_erisolspriteHeroPosX = 397; GAME_erisolspriteHeroPosY = 52; }
+                    else if(GAME_erisolspriteHeroPosX == 397) { GAME_erisolspriteHeroPosX = 371; GAME_erisolspriteHeroPosY = 35; }
+                    else if(GAME_erisolspriteHeroPosX == 371) { GAME_erisolspriteHeroPosX = 347; GAME_erisolspriteHeroPosY = 20; }
+                    else if(GAME_erisolspriteHeroPosX == 347) { GAME_erisolspriteHeroPosX = 336; GAME_erisolspriteHeroPosY = 12; gifErisolpriteHero.start(); }
+
+                    gifErisolpriteHero.setTransform(GAME_erisolspriteHeroPosX, GAME_erisolspriteHeroPosY, -1, -1);
+                }
+
+                // Fuck buttons
+                if(GAME_fuckButtonsPos != 33) {
+                    if(GAME_fuckButtonsPos == -165) GAME_fuckButtonsPos = -164;
+                    else if(GAME_fuckButtonsPos == -164) GAME_fuckButtonsPos = -122;
+                    else if(GAME_fuckButtonsPos == -122) GAME_fuckButtonsPos = -82;
+                    else if(GAME_fuckButtonsPos == -82) GAME_fuckButtonsPos = -40;
+                    else if(GAME_fuckButtonsPos == -40) GAME_fuckButtonsPos = 0;
+                    else if(GAME_fuckButtonsPos == 0) GAME_fuckButtonsPos = 42;
+                    else if(GAME_fuckButtonsPos == 42) GAME_fuckButtonsPos = 33;
+                }
+
+                // Fuck buttons
+                if(GAME_fuckMessage) {
+                    if(GAME_fuckMessageFrame == 2) {
+                        ctxBuffer.drawImage(sprites[8], 56.5, 225, 537, 177);
+                    } else if(GAME_fuckMessageFrame == 1) {
+                        ctxBuffer.drawImage(sprites[8], 46.5, 221.5, 557, 184);
+                    } else if(GAME_fuckMessageFrame == 0) {
+                        ctxBuffer.drawImage(sprites[8], 156.5, 258, 338, 111);
+                    }
+
+                    if(GAME_fuckMessageFrame > 0) {
+                        mainText.drawText("fuck", 325 - mainText.getTextWidth("fuck", "FontStuck", 1) / 2, 225 + (177 / 2) - 4, "FontStuck", hexToRgb("#4ac925"), 1);
+                    }
+
+                    if(GAME_fuckMessageFrame < 2) {
+                        GAME_fuckMessageFrame++;
+                    }
+                }
+
+                // Fade
+                if(GAME_fade >= 0.05) {
+                    ctxBuffer.globalAlpha = GAME_fade;
+                    ctxBuffer.fillRect(0, 0, 650, 450);
+                    ctxBuffer.globalAlpha = 1;
+                    GAME_fade -= .05;
+                } else if(GAME_fade < 0.05 && GAME_fade > 0) {
+                    GAME_fade = 0;
+                }
             }
             
 
@@ -428,49 +593,66 @@ window.addEventListener('DOMContentLoaded', () => {
             // Update main canvas with buffer
             ctx.putImageData(ctxBuffer.getImageData(0, 0, DOMcanvasBuffer.width, DOMcanvasBuffer.height), 0, 0);
 		} else {
-            gifPreloader.update();
+            // Preloader
+            if(loadedGifs[gifs.indexOf(gifPreloader)]) {
+                gifPreloader.update();
+            }
+
+            // Controls - volume
+            if(loadedSprites[volume]) {
+                ctxBuffer.drawImage(sprites[volume], 3, 2, 22.95, 21.65); // Volume
+            }
+
 
 
             // Sprites
-            allSpritesLoaded = true;
+            if(!allSpritesLoaded) {
+                allSpritesLoaded = true;
 
-            for (var n = 0; n < sprites.length; n++) {
-                if (loadedSprites[n] == false) {
-                    allSpritesLoaded = false;
-                    break;
+                for (var n = 0; n < sprites.length; n++) {
+                    if (loadedSprites[n] == false) {
+                        allSpritesLoaded = false;
+                        break;
+                    }
                 }
             }
 
 
             // Audio
-            allAudioLoaded = true;
+            if(!allAudioLoaded) {
+                allAudioLoaded = true;
 
-            for (var n = 0; n < audio.length; n++) {
-                if (loadedAudio[n] == false) {
-                    allAudioLoaded = false;
-                    break;
+                for (var n = 0; n < audio.length; n++) {
+                    if (loadedAudio[n] == false) {
+                        allAudioLoaded = false;
+                        break;
+                    }
                 }
             }
 
 
             // Gifs
-            allGifsLoaded = true;
+            if(!allGifsLoaded) {
+                allGifsLoaded = true;
 
-            for (var n = 0; n < gifs.length; n++) {
-                if (loadedGifs[n] == false) {
-                    allGifsLoaded = false;
-                    break;
+                for (var n = 0; n < gifs.length; n++) {
+                    if (loadedGifs[n] == false) {
+                        allGifsLoaded = false;
+                        break;
+                    }
                 }
             }
 
 
             // Fonts
-            mainText.allFontsLoaded = true;
+            if(!mainText.allFontsLoaded) {
+                mainText.allFontsLoaded = true;
 
-            for (var n = 0; n < mainText.fonts.length; n++) {
-                if (mainText.loadedFonts[n] == false) {
-                    mainText.allFontsLoaded = false;
-                    break;
+                for (var n = 0; n < mainText.fonts.length; n++) {
+                    if (mainText.loadedFonts[n] == false) {
+                        mainText.allFontsLoaded = false;
+                        break;
+                    }
                 }
             }
         }
@@ -493,6 +675,24 @@ window.addEventListener('DOMContentLoaded', () => {
             DOMcanvas.style.cursor = "pointer";
 
             return;
+        }
+
+        // Erisolsprite
+        if(GAME_curFrame == 2) {
+            if(GAME_interaction_erisolsprite.check() && GAME_fade == 0) {
+                DOMcanvas.style.cursor = "pointer";
+
+                return;
+            }
+        }
+
+        // Fuck buttons
+        if(GAME_curFrame == 3 && !GAME_fuckMessage && GAME_fade == 0) {
+            if(GAME_interaction_fuckButtons.check()) {
+                DOMcanvas.style.cursor = "pointer";
+
+                return;
+            }
         }
     });
 
@@ -517,12 +717,50 @@ window.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Screen
+        // Preloader screen
         if(GAME_curFrame == 0) {
             if(GAME_interaction_screen.check()) {
                 GAME_curFrame += 1;
                 audio[0].play();
                 updateVolume();
+
+                return;
+            }
+        }
+
+        // Easteregg
+        if(GAME_curFrame == 2 && GAME_fade == 0) {
+            if(GAME_interaction_easteregg.check()) {
+                gifEasteregg.reset();
+                gifEasteregg.start();
+
+                return;
+            }
+        }
+
+        // Erisolsprite
+        if(GAME_curFrame == 2 && GAME_fade == 0) {
+            if(GAME_interaction_erisolsprite.check()) {
+                GAME_fadeOut = true;
+
+                return;
+            }
+        }
+
+        // Fuck buttons
+        if(GAME_curFrame == 3 && !GAME_fuckMessage && GAME_fade == 0) {
+            if(GAME_interaction_fuckButtons.check()) {
+                GAME_fuckMessageFrame = 0;
+                GAME_fuckMessage = true;
+
+                return;
+            }
+        }
+
+        // Leave fuck message
+        if(GAME_curFrame == 3 && GAME_fuckMessage) {
+            if(GAME_interaction_screen.check()) {
+                GAME_fuckMessage = false;
 
                 return;
             }
