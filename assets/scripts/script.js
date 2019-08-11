@@ -429,8 +429,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
     
-    let GAME_erisolspriteHeroPosX = 521;
-    let GAME_erisolspriteHeroPosY = 131;
+    let GAME_erisolspriteHeroPosX = 509.1;
+    let GAME_erisolspriteHeroPosY = 112;
     
     let GAME_erisolspriteArrowOffset = 0;
     let GAME_erisolspriteArrowDirection = false;
@@ -571,13 +571,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 // ErisolspriteHero
                 if(GAME_erisolspriteHeroPosX != 336) {
-                    if(GAME_erisolspriteHeroPosX == 521) { GAME_erisolspriteHeroPosX = 487; GAME_erisolspriteHeroPosY = 109; }
-                    else if(GAME_erisolspriteHeroPosX == 487) { GAME_erisolspriteHeroPosX = 455; GAME_erisolspriteHeroPosY = 89; }
-                    else if(GAME_erisolspriteHeroPosX == 455) { GAME_erisolspriteHeroPosX = 422; GAME_erisolspriteHeroPosY = 70; }
-                    else if(GAME_erisolspriteHeroPosX == 422) { GAME_erisolspriteHeroPosX = 397; GAME_erisolspriteHeroPosY = 52; }
-                    else if(GAME_erisolspriteHeroPosX == 397) { GAME_erisolspriteHeroPosX = 371; GAME_erisolspriteHeroPosY = 35; }
-                    else if(GAME_erisolspriteHeroPosX == 371) { GAME_erisolspriteHeroPosX = 347; GAME_erisolspriteHeroPosY = 20; }
-                    else if(GAME_erisolspriteHeroPosX == 347) { GAME_erisolspriteHeroPosX = 336; GAME_erisolspriteHeroPosY = 12; gifErisolpriteHero.start(); }
+                    if(GAME_erisolspriteHeroPosX == 509.1) { GAME_erisolspriteHeroPosX = 475.4; GAME_erisolspriteHeroPosY = 90.4; }
+                    else if(GAME_erisolspriteHeroPosX == 475.4) { GAME_erisolspriteHeroPosX = 443.6; GAME_erisolspriteHeroPosY = 70; }
+                    else if(GAME_erisolspriteHeroPosX == 443.6) { GAME_erisolspriteHeroPosX = 413.7; GAME_erisolspriteHeroPosY = 51; }
+                    else if(GAME_erisolspriteHeroPosX == 413.7) { GAME_erisolspriteHeroPosX = 385.8; GAME_erisolspriteHeroPosY = 33.1; }
+                    else if(GAME_erisolspriteHeroPosX == 385.8) { GAME_erisolspriteHeroPosX = 359.8; GAME_erisolspriteHeroPosY = 16.4; }
+                    else if(GAME_erisolspriteHeroPosX == 359.8) { GAME_erisolspriteHeroPosX = 335.6; GAME_erisolspriteHeroPosY = 1; }
+                    else if(GAME_erisolspriteHeroPosX == 335.6) { GAME_erisolspriteHeroPosX = 324.1; GAME_erisolspriteHeroPosY = -6.3; gifErisolpriteHero.start(); }
 
                     gifErisolpriteHero.setTransform(GAME_erisolspriteHeroPosX, GAME_erisolspriteHeroPosY, 442.96, 674.61);
                 }
