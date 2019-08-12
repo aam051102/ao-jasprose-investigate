@@ -54,12 +54,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Text class
     class Text {
-        fonts = new Map();
-        allFontsLoaded = false;
-        loadedFonts = [];
+        constructor() {
+            this.fonts = new Map();
+            this.allFontsLoaded = false;
+            this.loadedFonts = [];
+        }
 
         // Get text width
-        getTextWidth = (text, font, size) => {
+        getTextWidth (text, font, size) {
             let width = 0;
             let fontShortcut = this.fonts.get(font);
 
@@ -77,10 +79,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
             return width;
-        };
+        }
 
         // Text loading function
-        loadText = (font, src) => {
+        loadText (font, src) {
             let thisFont = new TextFont(src);
 
             // Glyph loading
@@ -103,10 +105,10 @@ window.addEventListener('DOMContentLoaded', () => {
             xmlhttp.send();
 
             this.fonts.set(font, thisFont);
-        };
+        }
 
         // Text drawing function
-        drawText = (text, x, y, font, colour, size) => {
+        drawText (text, x, y, font, colour, size) {
             let offsetX = 0;
             let offsetY = 0;
             let fontShortcut = this.fonts.get(font);
@@ -161,35 +163,34 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Text font object
     class TextFont {
-        source = new Image();
-        sprites = new Map();
-        glyphSpacing = 0;
-        breakHeight = 0;
-        lineHeight = 0;
-        spaceWidth = 0;
-
         constructor(src) {
             this.source = new Image();
             this.source.src = src;
+
+            this.sprites = new Map();
+            this.glyphSpacing = 0;
+            this.breakHeight = 0;
+            this.lineHeight = 0;
+            this.spaceWidth = 0;
         };
 
         // Add sprite
-        add = (glyph, offsetx, offsety, width, height) => {
+        add(glyph, offsetx, offsety, width, height) {
             this.sprites.set(glyph, new Vector4(offsetx, offsety, width, height));
-        };
+        }
     }
 
     // Animated Gif object
     class AnimatedGif {
-        frames = [];
-        loadedFrames = [];
-        timing = [];
-        curTiming = 0;
-        curFrame = 0;
-        isPlaying = false;
-        transform = new Vector4();
-
         constructor(frames, timing) {
+            this.frames = [];
+            this.loadedFrames = [];
+            this.timing = timing;
+            this.curTiming = 0;
+            this.curFrame = 0;
+            this.isPlaying = false;
+            this.transform = new Vector4();
+
             gifs[currentGif] = this;
             loadedGifs[currentGif] = false;
 
@@ -200,7 +201,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 this.loadedFrames[i] = false;
 
                 this.frames[i].onload = (e) => {
-                    this.loadedFrames[this.frames.indexOf(e.path[0])] = true;
+                    console.log(e);
+                    this.loadedFrames[this.frames.indexOf((e.target == null) ? e.path[0] : e.target)] = true;
 
                     if(frames.length == this.loadedFrames.length) {
                         let hasFailed = false;
@@ -219,29 +221,27 @@ window.addEventListener('DOMContentLoaded', () => {
                 };
             }
 
-            this.timing = timing;
-
             currentGif++;
-        };
+        }
 
-        setTransform = (x, y, width, height) => {
+        setTransform(x, y, width, height) {
             this.transform = new Vector4(x, y, width, height);
-        };
+        }
 
-        start = () => {
+        start() {
             this.isPlaying = true;
-        };
+        }
 
-        stop = () => {
+        stop() {
             this.isPlaying = false;
-        };
+        }
 
-        reset = () => {
+        reset() {
             this.curFrame = 0;
             this.curTiming = this.timing[0];
-        };
+        }
 
-        update = () => {
+        update() {
             if(this.transform.z !== -1 && this.transform.w !== -1) {
                 ctxBuffer.drawImage(this.frames[this.curFrame], this.transform.x, this.transform.y, this.transform.z, this.transform.w);
             } else {
@@ -261,18 +261,16 @@ window.addEventListener('DOMContentLoaded', () => {
                     this.curTiming--;
                 }
             }
-        };
+        }
     }
 
     // Interactable
     class Interactable {
-        transform = new Vector4();
-
         constructor(x, y, width, height) {
             this.transform = new Vector4(x, y, width, height);
         };
 
-        check = () => {
+        check() {
             if(mousex >= this.transform.x && mousex <= this.transform.x + this.transform.z && mousey >= this.transform.y && mousey <= this.transform.y + this.transform.w) {
                 return true;
             }
@@ -343,7 +341,7 @@ window.addEventListener('DOMContentLoaded', () => {
     loadSprite("./assets/images/TextBox1.png");
     loadSprite("./assets/images/TextBox2.png");
     loadSprite("./assets/images/FuckButtons.png");
-    loadSprite("./assets/images//Erisolsprite.png");
+    loadSprite("./assets/images/Erisolsprite.png");
 
 
     // Audio
