@@ -201,7 +201,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 this.loadedFrames[i] = false;
 
                 this.frames[i].onload = (e) => {
-                    console.log(e);
                     this.loadedFrames[this.frames.indexOf((e.target == null) ? e.path[0] : e.target)] = true;
 
                     if(frames.length == this.loadedFrames.length) {
@@ -715,7 +714,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // Erisolsprite
         if(GAME_curFrame == 2 && GAME_fade == 0 && GAME_jasproseMessage == 0) {
-            if(GAME_interaction_erisolsprite.check()) {
+            if(GAME_interaction_screen.check()) {
                 DOMcanvas.style.cursor = "pointer";
 
                 return;
@@ -776,7 +775,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // Erisolsprite
         if(GAME_curFrame == 2 && GAME_fade == 0 && GAME_jasproseMessage == 0) {
-            if(GAME_interaction_erisolsprite.check()) {
+            if(GAME_interaction_screen.check()) {
                 GAME_messageFrame = 0;
                 GAME_jasproseMessage = 1;
 
